@@ -105,6 +105,7 @@ void write_to_fifos() {
     int hasWriters = NUM_PIPES;
     int rfd;
     char* pipe;
+    char* pmsg;
 
     memset(fds,0,sizeof(int) * NUM_PIPES);
 	for(int i=0; i<NUM_PIPES; i++) {
@@ -127,12 +128,15 @@ void write_to_fifos() {
 
 	while (hasWriters > 0) {
         rfd = fds[ rand() % NUM_PIPES ];
-        xprintf("Random fd is: %i\n",rfd);
         if ( -1 == rfd || 0 == rfd ) {
         	hasWriters--;
         	continue;
         }
-        write(rfd,"Lustre HAHAH is writing some stuff as data\n", 1024);
+        asprintf(&pmsg,"%s from fd %i\n", ( rand() % 2 == 0 ) ?
+        		       "Hello Miss:" :
+        		       "Hello Sir:", rfd );
+        write(rfd,pmsg, (size_t) strlen(pmsg) );
+        free(pmsg);
 		sleep(1);
 	}
 }
